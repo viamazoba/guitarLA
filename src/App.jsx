@@ -1,87 +1,94 @@
-import { useState } from 'react'
-import './App.css'
+import { useEffect, useState } from 'react'
 import { Guitar } from './components/Guitar'
 import { db } from './data/db'
+import { Header } from './components/Header';
 
 function App() {
-  const [ data, setData ] = useState(db);
-  const [ cart, setCart ] = useState([]);
+
+  const initialCart = ()=>{
+    const actualCart = localStorage.getItem('cart');
+    return actualCart? JSON.parse(actualCart): []
+  }
+  const [ data ] = useState(db);
+  const [ cart, setCart ] = useState(initialCart);
+  const MAX_ITEMS = 5;
+  const MIN_ITEMS = 1;
+
 
   const handleAddToCart = (item) =>{
-
     const indexItemExist = cart.findIndex(element =>{
       return item.id === element.id
     })
 
     if(indexItemExist === -1) {
-      setCart(prevCart => [...prevCart, item])
+      item.quantity = 1
+      setCart([...cart, item])
+    } else {
+      if(item.quantity >= MAX_ITEMS) return
+      const newCart = [...cart]
+      newCart[indexItemExist].quantity++
+      setCart([...newCart])
     }
   }
 
+  function deleteFromCart (id) {
+    setCart(prevCart => prevCart.filter(guitar => guitar.id !== id))
+  }
+
+  function increaseQuantity (id) {
+    const newCart = cart.map( item => {
+      if(item.id === id && item.quantity < MAX_ITEMS ) {
+        return {
+          ...item,
+          quantity: item.quantity + 1
+        }
+      }
+
+      return item
+    }) 
+    setCart([...newCart])
+  }
+
+  function decreaseQuantity(id){
+    const newCart = cart.map(guitar => {
+      if(guitar.id===id && guitar.quantity > MIN_ITEMS) {
+        return {
+          ...guitar,
+          quantity: guitar.quantity - 1
+        }
+      }
+
+      return guitar
+    })
+
+    setCart([...newCart])
+  }
+
+  function clearCart() {
+    setCart([])
+  }
+
+  useEffect(()=> {
+    localStorage.setItem('cart', JSON.stringify(cart))
+  }, [cart])
+
+  useEffect(()=>{
+    const carts = JSON.parse(localStorage.getItem('cart'))
+    if(carts){
+      setCart(carts)
+    }
+  },[])
+
   return (
     <>
-      <header className="py-5 header">
-        <div className="container-xl">
-          <div className="row justify-content-center justify-content-md-between">
-            <div className="col-8 col-md-3">
-              <a href="index.html">
-                <img className="img-fluid" src="./public/img/logo.svg" alt="imagen logo"/>
-              </a>
-            </div>
-            <nav className="col-md-6 a mt-5 d-flex align-items-start justify-content-end">
-              <div className="carrito">
-                <img className="img-fluid" src="./public/img/carrito.png" alt="imagen carrito"/>
-
-                <div id="carrito" className="bg-white p-3">
-                  <p className="text-center">El carrito esta vacio</p>
-                  <table className="w-100 table">
-                    <thead>
-                      <tr>
-                        <th>Imagen</th>
-                        <th>Nombre</th>
-                        <th>Precio</th>
-                        <th>Cantidad</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <img className="img-fluid" src="./public/img/guitarra_02.jpg" alt="imagen guitarra"/>
-                        </td>
-                        <td>SRV</td>
-                        <td className="fw-bold">
-                          $299
-                        </td>
-                        <td className="flex align-items-start gap-4">
-                          <button type="button" className="btn btn-dark">
-                            -
-                          </button>
-                          1
-                          <button type="button" className="btn btn-dark">
-                            +
-                          </button>
-                        </td>
-                        <td>
-                          <button className="btn btn-danger" type="button">
-                            X
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  <p className="text-end">Total pagar:
-                    <span className="fw-bold">$899</span>
-                  </p>
-                  <button className="btn btn-dark w-100 mt-3 p-2">Vaciar Carrito</button>
-                </div>
-              </div>
-            </nav>
-          </div>
-        </div>
-      </header>
-
+      
+      <Header
+        cart = {cart}
+        deleteFromCart = { deleteFromCart}
+        increaseQuantity = { increaseQuantity }
+        decreaseQuantity = { decreaseQuantity }
+        clearCart = { clearCart }
+      />
       <main className="container-xl mt-5">
         <h2 className="text-center">Nuestra Colección</h2>
 

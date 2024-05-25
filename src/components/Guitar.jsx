@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 export const Guitar = ({
     guitar,
     addToCart
