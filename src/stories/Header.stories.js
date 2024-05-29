@@ -20,7 +20,7 @@ export default {
 export const LoggedIn = {
   args: {
     user: {
-      name: 'Jane Doe',
+      name: 'Prueba Esinergia',
     },
   },
 };

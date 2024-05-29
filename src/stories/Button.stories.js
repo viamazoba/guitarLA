@@ -23,26 +23,26 @@ export default {
 export const Primary = {
   args: {
     primary: true,
-    label: 'Button',
+    label: 'Prueba Esinergia',
   },
 };
 
 export const Secondary = {
   args: {
-    label: 'Button',
+    label: 'Prueba Esinergia',
   },
 };
 
 export const Large = {
   args: {
     size: 'large',
-    label: 'Button',
+    label: 'Prueba Esinergia',
   },
 };
 
 export const Small = {
   args: {
     size: 'small',
-    label: 'Button',
+    label: 'Prueba Esinergia',
   },
 };
